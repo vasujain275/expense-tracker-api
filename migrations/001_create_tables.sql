@@ -1,6 +1,5 @@
 -- +goose Up
--- +goose StatementBegin
-
+-- Create extension first
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create users table
@@ -9,8 +8,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
     currency VARCHAR(3) DEFAULT 'USD',
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create account_type enum
@@ -24,8 +22,7 @@ CREATE TABLE accounts (
     type account_type NOT NULL,
     balance DECIMAL(15,2) DEFAULT 0.00,
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create indexes for accounts
@@ -52,8 +49,7 @@ CREATE TABLE transactions (
     amount DECIMAL(15,2) NOT NULL,
     description VARCHAR(500) NOT NULL,
     date DATE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create indexes for transactions
@@ -74,38 +70,7 @@ INSERT INTO categories (name, type, color) VALUES
     ('Healthcare', 'expense', '#14B8A6'),
     ('Education', 'expense', '#F59E0B');
 
--- Create function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Create triggers for updated_at
-CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_accounts_updated_at BEFORE UPDATE ON accounts
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_transactions_updated_at BEFORE UPDATE ON transactions
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- +goose StatementEnd
-
 -- +goose Down
--- +goose StatementBegin
-
--- Drop triggers
-DROP TRIGGER IF EXISTS update_transactions_updated_at ON transactions;
-DROP TRIGGER IF EXISTS update_accounts_updated_at ON accounts;
-DROP TRIGGER IF EXISTS update_users_updated_at ON users;
-
--- Drop function
-DROP FUNCTION IF EXISTS update_updated_at_column();
-
 -- Drop tables (in reverse order due to foreign keys)
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS categories;
@@ -115,5 +80,3 @@ DROP TABLE IF EXISTS users;
 -- Drop enums
 DROP TYPE IF EXISTS category_type;
 DROP TYPE IF EXISTS account_type;
-
--- +goose StatementEnd
