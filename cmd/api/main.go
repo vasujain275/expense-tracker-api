@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vasujain275/expense-tracker-api/internal/config"
+	"github.com/vasujain275/expense-tracker-api/internal/database"
+	"github.com/vasujain275/expense-tracker-api/internal/repositories"
 )
 
 func main() {
@@ -19,8 +21,17 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	router := gin.Default()
+	db := database.Connect(cfg.PostgresConnectionDsn())
 
-	dsn := cfg.PostgresConnectionDsn()
+	// Run migrations
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
+	}
+
+	// Initialize repositories
+	userRepo := repositories.NewUserRepository(db)
+	accountRepo := repositories.NewAccountRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db)
 
 }
