@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/vasujain275/expense-tracker-api/docs" // This is required for Swagger
 	"github.com/vasujain275/expense-tracker-api/internal/config"
 	"github.com/vasujain275/expense-tracker-api/internal/database"
 	"github.com/vasujain275/expense-tracker-api/internal/handlers"
