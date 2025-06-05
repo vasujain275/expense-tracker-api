@@ -31,7 +31,7 @@ func Load() (*Config, error) {
 		DBPort:      getEnv("DB_PORT", "5432"),
 		DBUser:      getEnv("DB_USER", "postgres"),
 		DBPassword:  getEnv("DB_PASSWORD", "postgres123"),
-		DBName:      getEnv("DB_NAME", "bookbridgeDB"),
+		DBName:      getEnv("DB_NAME", "expenseTrackerDB"),
 		DBSSLMode:   getEnv("DB_SSLMODE", "disable"),
 		Environment: getEnv("ENVIRONMENT", "development"),
 	}

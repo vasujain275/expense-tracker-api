@@ -278,7 +278,7 @@ func (s *transactionService) GetTransactionSummary(userID uuid.UUID, startDate, 
 }
 
 // GetMonthlyTotal gets total transactions for a specific month
-func (s *transactionService) GetMonthlyTotal(userID uuid.UUID, month time.Time) (decimal.Decimal, error) {
+func (s *transactionService) GetMonthlyTotal(userID uuid.UUID, year int, month int) (decimal.Decimal, error) {
 	if userID == uuid.Nil {
 		return decimal.Zero, errors.New("invalid user ID")
 	}
@@ -292,7 +292,8 @@ func (s *transactionService) GetMonthlyTotal(userID uuid.UUID, month time.Time) 
 		return decimal.Zero, errors.New("user not found")
 	}
 
-	startDate := time.Date(month.Year(), month.Month(), 1, 0, 0, 0, 0, month.Location())
+	loc := time.UTC
+	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, loc)
 	endDate := startDate.AddDate(0, 1, -1)
 
 	return s.transactionRepo.GetTotalByDateRange(userID, startDate, endDate)
@@ -318,5 +319,11 @@ func (s *transactionService) validateTransactionCreateRequest(req TransactionCre
 	if req.Date.IsZero() {
 		return errors.New("transaction date is required")
 	}
+	return nil
+}
+
+// validateTransactionListRequest validates the transaction list request
+func (s *transactionService) validateTransactionListRequest(req TransactionListRequest) error {
+	// Add validation logic if needed
 	return nil
 }
